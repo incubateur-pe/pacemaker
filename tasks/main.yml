@@ -1,0 +1,66 @@
+---
+- name: Install pacemaker packages
+  package:
+    name:
+      - pacemaker
+      - pcs
+      - resource-agents
+
+- name: Enable and start pcs service
+  ansible.builtin.systemd:
+    name: pcsd
+    state: started
+    enabled: yes
+
+- name: Cluster management
+  include_tasks: cluster.yml
+
+- name: Configure fencing for libvirt
+  include_tasks: fencing_libvirt.yml
+  when: pcs_fencing_libvirt_enabled
+
+- name: Configure fencing for vmware
+  include_tasks: fencing_libvirt.yml
+  when: pcs_fencing_vmware_enabled
+
+- name: Set stonith state
+  pcs_property:
+    name: stonith-enabled
+    value: "{{ pcs_fencing_libvirt_enabled | ternary('true', 'false') }}"
+  run_once: true
+
+- name: Set VirtualIP ressources
+  pcs_resource:
+    name: '{{ vip.name }}'
+    resource_type: 'ocf:heartbeat:IPaddr2'
+    options: "ip={{ vip.ip }} op monitor interval=5"
+  loop: "{{ pcs_virtual_ips }}"
+  loop_control:
+    loop_var: vip
+  run_once: true
+
+- name: Set services resources
+  pcs_resource:
+    name: '{{ service.prefix | default("") }}{{ service.name }}'
+    resource_class: systemd
+    resource_type: "systemd:{{ service.name }}"
+    options: "{{ service.options }}"
+  loop: "{{ pcs_service_resources }}"
+  loop_control:
+    loop_var: service
+  run_once: true
+
+- name: Set resources colocation
+  pcs_constraint_colocation:
+    resource1: "{{ item.resource1 }}"
+    resource2: "{{ item.resource2 }}"
+  loop: "{{ pcs_colocations }}"
+  run_once: true
+
+- name: Set resources order
+  pcs_constraint_colocation:
+    resource1: "{{ item.resource1 }}"
+    resource2: "{{ item.resource2 }}"
+  loop: "{{ pcs_colocations }}"
+  when: "'ordered' in item and item.ordered"
+  run_once: true

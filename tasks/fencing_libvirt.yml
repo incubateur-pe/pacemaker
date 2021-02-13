@@ -1,0 +1,33 @@
+---
+- name: Check parameters
+  assert:
+    that:
+      - pcs_fencing_libvirt_key is defined
+      - pcs_vm_name is defined
+
+- name: Install fencing agent
+  package:
+    name: fence-virt
+
+- name: Ensure cluster configuration directory exists
+  file:
+    state: directory
+    path: /etc/cluster
+    mode: 0755
+
+- name: Set up the fence key on the nodes
+  copy:
+    src: "{{ pcs_fencing_libvirt_key }}"
+    dest: /etc/cluster/fence_xvm.key
+    mode: 0600
+
+- name: Create fence_xvm STONITH device
+  pcs_resource:
+    name: "fence-xvm"
+    resource_class: 'stonith'
+    resource_type: 'fence_xvm'
+    options: >-
+      pcmk_host_map="{% for item in play_hosts %}{{ hostvars[item]['ansible_hostname'] }}:{{ hostvars[item]['pcs_vm_name'] }};{% endfor %}"
+      ip_family=ipv4
+      op monitor interval=30s
+  run_once: true
