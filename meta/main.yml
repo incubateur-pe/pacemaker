@@ -1,0 +1,26 @@
+galaxy_info:
+  author: Ulrich GIRAUD
+  description: Create and configure a HA cluster
+
+  license: BSD-3-Clause
+
+  min_ansible_version: 2.9
+
+
+  platforms:
+  - name: Fedora
+    versions:
+    - 32
+    - 33
+  - name: EL
+    versions:
+    - 7
+    - 8
+
+  galaxy_tags:
+    - cluster
+    - pacemaker
+    - ha
+
+dependencies:
+  - { role: ondrejhome.pcs-modules-2 }

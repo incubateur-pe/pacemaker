@@ -1,0 +1,13 @@
+---
+pcs_cluster_user: pcs_cluster
+pcs_cluster_user_group: pcs_cluster
+pcs_cluster_user_pass: pcs_cluster
+pcs_cluster_name: pcs_cluster
+
+pcs_fencing_libvirt_enabled: false
+pcs_vm_name: "{{ ansible_hostname }}"
+pcs_fencing_vmware_enabled: false
+
+pcs_virtual_ips: []
+pcs_service_resources: []
+pcs_colocations: []

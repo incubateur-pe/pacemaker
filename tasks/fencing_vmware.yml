@@ -1,0 +1,24 @@
+- name: Check parameters
+  assert:
+    that:
+      - vm_name is defined
+      - pcs_vmware_addr is defined
+      - pcs_vmware_username is  defined
+      - pcs_vmware_password is not defined
+
+- name: Ensure fence agent for vmware rest is installed
+  package:
+    name:  fence-agents-vmware-rest
+
+- name: Create fence_vmware_rest STONITH device
+  pcs_resource:
+    name: 'fence-vmware-rest'
+    resource_class: 'stonith'
+    resource_type: 'fence_vmware_rest'
+    options: >-
+      pcmk_host_map="{% for item in play_hosts %}{{ hostvars[item]['ansible_hostname'] }}:{{ hostvars[item]['pcs_vm_name'] }};{% endfor %}"
+      ipaddr={{ pcs_vmware_addr }}
+      login={{ pcs_vmware_username }}
+      passwd={{ pcs_vmware_password }}
+      ssl="1" ssl_insecure="1"
+  run_once: true

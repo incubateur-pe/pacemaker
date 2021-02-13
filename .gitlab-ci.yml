@@ -1,0 +1,72 @@
+---
+stages:
+  - lint
+  - test
+  - merge
+  - release
+
+.onlys_changes: &only_changes
+  changes:
+    - "molecule/**/*"
+    - "defaults/**/*"
+    - "handlers/**/*"
+    - "meta/**/*"
+    - "tasks/**/*"
+    - "templates/**/*"
+    - "vars/**/*"
+    - "*.yaml"
+    - "*.yml"
+
+lint:
+  tags:
+    - kvm
+  stage: lint
+  script:
+    - echo "Running on environment ${ENV_KIND}"
+    - docker run --env-file molecule/common/env_${ENV_KIND}.sh -w /sources/pacemaker -v $(pwd):/sources/pacemaker --rm ulrichg/molecule-vagrant-libvirt:latest lint
+
+test-all:
+  tags:
+    - kvm
+  stage: test
+  only:
+    <<: *only_changes
+  script:
+    - echo "Running on environment ${ENV_KIND}"
+    - docker run --env-file molecule/common/env_${ENV_KIND}.sh -w /sources/pacemaker -v $(pwd):/sources/pacemaker -v ~/.vagrant.d/boxes/:/root/.vagrant.d/boxes/ -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock --rm ulrichg/molecule-vagrant-libvirt:latest
+
+new-tag:
+  stage: release
+  image:
+    name: marcelocorreia/semver
+    entrypoint: [""]
+  tags:
+    - docker
+  only:
+    <<: *only_changes
+    refs:
+      - master
+  except:
+    refs:
+      - tags
+      - schedules
+  script:
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - git config user.name "${GITLAB_USER_NAME}"
+    - git remote add api-origin https://oauth2:${GITLAB_ACCESS_TOKEN}@gitlab.com/${CI_PROJECT_PATH}
+    - if [ -z "$(git tag --points-at HEAD)" ] ; then git tag $(semver -c -i patch $(git describe --tags --abbrev=0)); fi
+    - git push api-origin --tags
+
+publish:
+  stage: release
+  image:
+    name: ansible/ansible-runner
+    entrypoint: [""]
+  tags:
+    - docker
+  only:
+    refs:
+      - tags
+  script:
+    - ansible-galaxy login --api-key "${GALAXY_TOKEN}" --github-token "${GITHUB_TOKEN}"
+    - ansible-galaxy import incubateur-pe pacemaker

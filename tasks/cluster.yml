@@ -1,0 +1,53 @@
+---
+- name: Create cluster system group
+  group:
+    name: "{{ pcs_cluster_user_group }}"
+    state: 'present'
+
+- name: Create cluster system user
+  user:
+    name: "{{ pcs_cluster_user }}"
+    state: 'present'
+    password: >-
+      {{ pcs_cluster_user_pass |
+      password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}
+    group: "{{ pcs_cluster_user_group }}"
+    comment: 'HA Cluster Administrator'
+
+- name: Authorize cluster nodes
+  pcs_auth:
+    node_name: "{{ hostvars[host]['ansible_hostname'] }}"
+    username: "{{ pcs_cluster_user }}"
+    password: "{{ pcs_cluster_user_pass }}"
+  loop: "{{ play_hosts }}"
+  loop_control:
+    loop_var: host
+  run_once: true
+
+- name: Setup cluster
+  pcs_cluster:
+    node_list: "{{ play_hosts | join(' ') }}"
+    cluster_name: "{{ pcs_cluster_name }}"
+  run_once: true
+
+- name: Start cluster services on all nodes
+  service:
+    name: "{{ item }}"
+    state: started
+  loop:
+    - pacemaker
+    - corosync
+
+- name: Enable cluster services on boot
+  service:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - pacemaker
+    - corosync
+
+- name: Set quorum policy to ignore on 2 nodes clusters
+  pcs_property:
+    name: no-quorum-policy
+    value: ignore
+  when: play_hosts | length == 2
