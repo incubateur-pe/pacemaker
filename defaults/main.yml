@@ -1,6 +1,4 @@
 ---
-pcs_cluster_user: pcs_cluster
-pcs_cluster_user_group: pcs_cluster
 pcs_cluster_user_pass: pcs_cluster
 pcs_cluster_name: pcs_cluster
 
