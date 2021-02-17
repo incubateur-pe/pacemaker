@@ -29,6 +29,8 @@ lint: |
   flake8
 provisioner:
   name: ansible
+  env:
+    CENTOS_BASE_MIRROR: ${CENTOS_BASE_MIRROR}
   inventory:
     host_vars:
       centos7-1:
