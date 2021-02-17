@@ -26,6 +26,7 @@ Role Variables
 | pcs_colocations.resource1 | name of the first resource | N/A |
 | pcs_colocations.resource2 | name of the second resource | N/A |
 | pcs_colocations.ordered | Apply an order constraint when set  | false |
+| pcs_stickiness_default | Define a stickiness=100 as resource default | false |
 
 Dependencies
 ------------

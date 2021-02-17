@@ -11,3 +11,4 @@ pcs_fencing_vmware_enabled: false
 pcs_virtual_ips: []
 pcs_service_resources: []
 pcs_colocations: []
+pcs_stickiness_default: false

@@ -27,3 +27,5 @@
           - resource1: VirtualIP1
             resource2: Service_haproxy
             ordered: true
+
+        pcs_stickiness_default: true
