@@ -1,7 +1,41 @@
 ---
 - name: Prepare
   hosts: all
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'http_proxy') }}"
+    HTTP_PROXY: "{{ lookup('env', 'HTTP_PROXY') }}"
+    HTTPS_PROXY: "{{ lookup('env', 'HTTPS_PROXY') }}"
+    no_proxy: "{{ lookup('env', 'no_proxy') }}"
+    NO_PROXY: "{{ lookup('env', 'NO_PROXY') }}"
   tasks:
+    - block:
+      - name: Configure yum to trust all repositories
+        lineinfile:
+          line: sslverify=false
+          path: /etc/yum.conf
+          regexp: '^sslverify=.*'
+
+      - name: Dépose la configuration yum (centos)
+        copy:
+          content: |
+            [base]
+            name=CentOS-$releasever - Base
+            baseurl={{ lookup('env', 'CENTOS_BASE_MIRROR') }}/$releasever/os/$basearch/
+            gpgcheck=0
+
+            [updates]
+            name=CentOS-$releasever - Updates
+            baseurl={{ lookup('env', 'CENTOS_BASE_MIRROR') }}/$releasever/updates/$basearch/
+            gpgcheck=0
+
+            [extras]
+            name=CentOS-$releasever - Extras
+            baseurl={{ lookup('env', 'CENTOS_BASE_MIRROR') }}/$releasever/extras/$basearch/
+            gpgcheck=0
+          dest: /etc/yum.repos.d/CentOS-Base.repo
+          mode: 0755
+
     - name: "Remove /etc/hosts entry for ansible_hostname"
       ansible.builtin.lineinfile:
         path: /etc/hosts
