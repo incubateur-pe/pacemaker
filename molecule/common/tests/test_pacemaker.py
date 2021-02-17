@@ -2,19 +2,6 @@
 import pytest
 
 
-def test_cluster_group(host):
-    group = host.group("pcs_cluster")
-
-    assert group.exists
-
-
-def test_cluster_user(host):
-    user = host.user("pcs_cluster")
-
-    assert user.exists
-    assert user.group == "pcs_cluster"
-
-
 @pytest.mark.parametrize("name", [
     "pcsd",
     "corosync",
