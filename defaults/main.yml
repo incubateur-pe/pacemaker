@@ -6,6 +6,7 @@ pcs_fencing_libvirt_enabled: false
 pcs_vm_name: "{{ ansible_hostname }}"
 pcs_fencing_vmware_enabled: false
 
+pcs_resources_only: false
 pcs_virtual_ips: []
 pcs_service_resources: []
 pcs_colocations: []
