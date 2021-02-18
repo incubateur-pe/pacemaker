@@ -20,7 +20,7 @@
   when: pcs_fencing_libvirt_enabled
 
 - name: Configure fencing for vmware
-  include_tasks: fencing_libvirt.yml
+  include_tasks: fencing_vmware.yml
   when: pcs_fencing_vmware_enabled
 
 - name: Set stonith state
