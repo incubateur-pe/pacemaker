@@ -16,9 +16,14 @@
     loop_var: host
   run_once: true
 
+- name: Get list of hostnames
+  set_fact:
+    cluster_hostnames: "{{ cluster_hostnames | default('') + ' ' + hostvars[item]['ansible_hostname'] }}"
+  loop: "{{ play_hosts }}"
+
 - name: Setup cluster
   pcs_cluster:
-    node_list: "{{ play_hosts | join(' ') }}"
+    node_list: "{{ cluster_hostnames }}"
     cluster_name: "{{ pcs_cluster_name }}"
   run_once: true
 
