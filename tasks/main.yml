@@ -61,7 +61,7 @@
   run_once: true
 
 - name: Set resources order
-  pcs_constraint_colocation:
+  pcs_constraint_order:
     resource1: "{{ item.resource1 }}"
     resource2: "{{ item.resource2 }}"
   loop: "{{ pcs_colocations }}"
