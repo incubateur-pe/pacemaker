@@ -18,14 +18,14 @@
         pcs_service_resources:
           - name: haproxy
             prefix: Service_
-            options: op monitor interval=5s
+            options: --clone op monitor interval=5s
 
         pcs_colocations:
           - resource1: VirtualIP0
-            resource2: Service_haproxy
+            resource2: Service_haproxy-clone
             ordered: true
           - resource1: VirtualIP1
-            resource2: Service_haproxy
+            resource2: Service_haproxy-clone
             ordered: true
 
         pcs_stickiness_default: true
