@@ -1,0 +1,31 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include pacemaker"
+      include_role:
+        name: "pacemaker"
+      vars:
+        pcs_fencing_libvirt_enabled: true
+        pcs_fencing_libvirt_key: "{{ role_path + '/tests/fence_key' }}"
+
+        pcs_virtual_ips:
+          - name: VirtualIP0
+            ip: 192.168.121.10
+          - name: VirtualIP1
+            ip: 192.168.121.20
+        
+        pcs_service_resources:
+          - name: haproxy
+            prefix: Service_
+            options: op monitor interval=5s
+
+        pcs_colocations:
+          - resource1: VirtualIP0
+            resource2: Service_haproxy
+            ordered: true
+          - resource1: VirtualIP1
+            resource2: Service_haproxy
+            ordered: true
+
+        pcs_stickiness_default: true
