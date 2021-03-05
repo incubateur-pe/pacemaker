@@ -1,0 +1,57 @@
+---
+dependency:
+  name: galaxy
+  options:
+    role-file: requirements.yml
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+platforms:
+  - name: debian10-1
+    box: debian/buster64
+    memory: 1024
+    cpus: 1
+    provider_options:
+      connect_via_ssh: ${REMOTE_HOST:-false}
+    provider_raw_config_args: ${PROVIDER_ARGS:-"[]"}
+  - name: debian10-2
+    box: debian/buster64
+    memory: 1024
+    cpus: 1
+    provider_options:
+      connect_via_ssh: ${REMOTE_HOST:-false}
+    provider_raw_config_args: ${PROVIDER_ARGS:-"[]"}
+lint: |
+  set -e
+  yamllint .
+  ANSIBLE_LIBRARY=~/.cache/molecule/pacemaker/default/roles/ondrejhome.pcs-modules-2/library/ ansible-lint .
+  flake8
+provisioner:
+  name: ansible
+  env:
+    DEBIAN_PROXY: ${DEBIAN_PROXY}
+  inventory:
+    host_vars:
+      debian10-1:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_debian10-1
+      debian10-2:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_debian10-2
+  config_options:
+      ssh_connection:
+        ssh_args: ${SSH_ARGS:-""}
+  connection_options:
+    ansible_ssh_user: vagrant
+    ansible_become: true
+  log: true
+  lint:
+    name: ansible-lint
+scenario:
+  name: debianbuster
+verifier:
+  name: testinfra
+  options:
+    ssh-config: ../common/tests/${SSH_CONFIG}
+  directory: ../common/tests/
+  lint:
+    name: flake8
