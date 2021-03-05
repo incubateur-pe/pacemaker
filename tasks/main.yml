@@ -7,6 +7,13 @@
         - pacemaker
         - pcs
         - resource-agents
+    register: package_install
+
+  - name: Remove default debian cluster
+    pcs_cluster:
+      cluster_name: "debian"
+      state: absent
+    when:  "ansible_os_family == 'Debian' and package_install.changed"
 
   - name: Enable and start pcs service
     ansible.builtin.systemd:
