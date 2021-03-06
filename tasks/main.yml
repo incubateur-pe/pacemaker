@@ -67,6 +67,16 @@
     loop_var: service
   run_once: true
 
+- name: Set services resources clones
+  pcs_resource_clone:
+    name: '{{ service.prefix | default("") }}{{ service.name }}'
+    state: "{{ service.clone | ternary('present', 'absent') }}"
+  loop: "{{ pcs_service_resources }}"
+  loop_control:
+    loop_var: service
+  when: "'clone' in service"
+  run_once: true
+
 - name: Set resources colocation
   pcs_constraint_colocation:
     resource1: "{{ item.resource1 }}"
