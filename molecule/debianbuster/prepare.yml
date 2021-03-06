@@ -28,6 +28,7 @@
         name:
           - haproxy
           - python3-distutils
+          - apache2
 
     - name: Copy HAProxy configuration in place.
       copy:
