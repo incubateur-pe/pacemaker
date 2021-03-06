@@ -22,6 +22,7 @@ Role Variables
 | pcs_service_resources[].name | name of the service to configure | N/A |
 | pcs_service_resources[].prefix | prefix to add to the resource name | N/A |
 | pcs_service_resources[].options | resource options | N/A |
+| pcs_service_resources[].clone | define the ressource as a clone | N/A |
 | pcs_colocations | set up resources colocations | [] |
 | pcs_colocations.resource1 | name of the first resource | N/A |
 | pcs_colocations.resource2 | name of the second resource | N/A |
