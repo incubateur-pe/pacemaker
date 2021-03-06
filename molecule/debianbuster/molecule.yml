@@ -8,14 +8,14 @@ driver:
   provider:
     name: libvirt
 platforms:
-  - name: debian10-1
+  - name: vm-1
     box: debian/buster64
     memory: 1024
     cpus: 1
     provider_options:
       connect_via_ssh: ${REMOTE_HOST:-false}
     provider_raw_config_args: ${PROVIDER_ARGS:-"[]"}
-  - name: debian10-2
+  - name: vm-2
     box: debian/buster64
     memory: 1024
     cpus: 1
@@ -33,10 +33,10 @@ provisioner:
     DEBIAN_PROXY: ${DEBIAN_PROXY}
   inventory:
     host_vars:
-      debian10-1:
-        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_debian10-1
-      debian10-2:
-        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_debian10-2
+      vm-1:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_vm-1
+      vm-2:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_vm-2
   config_options:
       ssh_connection:
         ssh_args: ${SSH_ARGS:-""}
