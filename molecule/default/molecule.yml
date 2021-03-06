@@ -8,15 +8,15 @@ driver:
   provider:
     name: libvirt
 platforms:
-  - name: centos7-1
-    box: centos/7
+  - name: vm-1
+    box: centos/${CENTOS_VERSION:-7}
     memory: 1024
     cpus: 1
     provider_options:
       connect_via_ssh: ${REMOTE_HOST:-false}
     provider_raw_config_args: ${PROVIDER_ARGS:-"[]"}
-  - name: centos7-2
-    box: centos/7
+  - name: vm-2
+    box: centos/${CENTOS_VERSION:-7}
     memory: 1024
     cpus: 1
     provider_options:
@@ -26,17 +26,17 @@ lint: |
   set -e
   yamllint .
   ANSIBLE_LIBRARY=~/.cache/molecule/pacemaker/default/roles/ondrejhome.pcs-modules-2/library/ ansible-lint .
-  flake8
+  flake8 --max-line-length=120
 provisioner:
   name: ansible
   env:
     CENTOS_BASE_MIRROR: ${CENTOS_BASE_MIRROR}
   inventory:
     host_vars:
-      centos7-1:
-        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_centos7-1
-      centos7-2:
-        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_centos7-2
+      vm-1:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_vm-1
+      vm-2:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_vm-2
   config_options:
       ssh_connection:
         ssh_args: ${SSH_ARGS:-""}

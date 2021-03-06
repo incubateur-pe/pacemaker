@@ -19,7 +19,7 @@ def test_cluster_status(host):
     cmd = host.run("pcs status")
 
     assert "2 nodes configured" in cmd.stdout
-    assert "Online: [ centos7-1 centos7-2 ]" in cmd.stdout
+    assert "Online: [ vm-1 vm-2 ]" in cmd.stdout
 
 
 def test_resource_listening(host):
