@@ -11,3 +11,7 @@ pcs_virtual_ips: []
 pcs_service_resources: []
 pcs_colocations: []
 pcs_stickiness_default: false
+
+pcs_prometheus_exporter: true
+pcs_prometheus_exporter_base_url: https://github.com
+pcs_prometheus_exporter_version: 1.2.1

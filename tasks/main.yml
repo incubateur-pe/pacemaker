@@ -44,6 +44,10 @@
       name: stonith-enabled
       value: "{{ pcs_fencing_libvirt_enabled | ternary('true', 'false') }}"
     run_once: true
+
+  - name: Install prometheus exporter
+    include_tasks: prometheus_exporter.yml
+    when: pcs_prometheus_exporter
   when: not pcs_resources_only
 
 - name: Set VirtualIP ressources
