@@ -28,6 +28,10 @@ Role Variables
 | pcs_colocations.resource2 | name of the second resource | N/A |
 | pcs_colocations.ordered | Apply an order constraint when set  | false |
 | pcs_stickiness_default | Define a stickiness=100 as resource default | false |
+| pcs_prometheus_exporter | Installs a prometheus exporter listening on port 9664 | true |
+| pcs_prometheus_exporter_base_url | Base url to download exporter binaries | https://github.com |
+| pcs_prometheus_exporter_version | ha_cluster_exporter version to install | 1.2.1 |
+
 
 Dependencies
 ------------

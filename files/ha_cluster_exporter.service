@@ -1,0 +1,9 @@
+[Unit]
+Description=HA CLuster Exporter
+
+[Service]
+EnvironmentFile=/etc/sysconfig/ha_cluster_exporter
+ExecStart=/usr/bin/ha_cluster_exporter $OPTIONS
+
+[Install]
+WantedBy=multi-user.target

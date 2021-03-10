@@ -1,0 +1,38 @@
+- name: Install ha_cluster_exporter
+  get_url:
+    url: "{{ pcs_prometheus_exporter_base_url }}/ClusterLabs/ha_cluster_exporter/releases/download/{{ pcs_prometheus_exporter_version }}/ha_cluster_exporter-amd64"
+    dest: /usr/bin/ha_cluster_exporter
+    owner: root
+    group: root
+    mode: '0755'
+  register: binary_ha_cluster_exporter
+
+- name: Create systemd service ha_cluster_exporter
+  copy:
+    src: ha_cluster_exporter.service
+    dest: /etc/systemd/system/
+    mode: 0644
+
+- name: Create configuration file for ha_cluster_exporter service
+  copy:
+    src: ha_cluster_exporter.sysconfig
+    dest: /etc/sysconfig/ha_cluster_exporter
+    owner: root
+    group: root
+    mode: 0644
+  register: configuration_ha_cluster_exporter
+
+- name: Enable and start service ha_cluster_exporter
+  systemd:
+    daemon_reload: true
+    name: "ha_cluster_exporter"
+    enabled: yes
+    state: started
+  register: start_ha_cluster_exporter
+
+- name: Restart service haproxy_exporter
+  systemd:
+    daemon_reload: true
+    name: "haproxy_exporter"
+    state: restarted
+  when: "not start_ha_cluster_exporter.changed and (configuration_ha_cluster_exporter.changed or binary_ha_cluster_exporter.changed)"
