@@ -10,7 +10,7 @@ import pytest
 def test_cluster_services(host, name):
     service = host.service(name)
 
-    assert service.is_valid
+    #assert service.is_valid
     assert service.is_enabled
     assert service.is_running
 
