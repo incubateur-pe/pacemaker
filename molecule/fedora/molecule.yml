@@ -1,0 +1,57 @@
+---
+dependency:
+  name: galaxy
+  options:
+    role-file: requirements.yml
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+platforms:
+  - name: vm-1
+    box: fedora/${FEDORA_VERSION:-32-cloud-base}
+    memory: 1024
+    cpus: 1
+    provider_options:
+      connect_via_ssh: ${REMOTE_HOST:-false}
+    provider_raw_config_args: ${PROVIDER_ARGS:-"[]"}
+  - name: vm-2
+    box: fedora/${FEDORA_VERSION:-32-cloud-base}
+    memory: 1024
+    cpus: 1
+    provider_options:
+      connect_via_ssh: ${REMOTE_HOST:-false}
+    provider_raw_config_args: ${PROVIDER_ARGS:-"[]"}
+lint: |
+  set -e
+  yamllint .
+  ANSIBLE_LIBRARY=~/.cache/molecule/pacemaker/default/roles/ondrejhome.pcs-modules-2/library/ ansible-lint .
+  flake8 --max-line-length=120
+provisioner:
+  name: ansible
+  env:
+    CENTOS_BASE_MIRROR: ${CENTOS_BASE_MIRROR}
+  inventory:
+    host_vars:
+      vm-1:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_vm-1
+      vm-2:
+        pcs_vm_name: ${MOLECULE_SCENARIO_NAME}_vm-2
+  config_options:
+      ssh_connection:
+        ssh_args: ${SSH_ARGS:-""}
+  connection_options:
+    ansible_ssh_user: vagrant
+    ansible_become: true
+  log: true
+  lint:
+    name: ansible-lint
+scenario:
+  name: fedora
+verifier:
+  name: testinfra
+  options:
+    ssh-config: ../common/tests/${SSH_CONFIG}
+  directory: ../common/tests/
+  lint:
+    name: flake8
