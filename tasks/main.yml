@@ -1,12 +1,12 @@
 ---
 - name: Pacemaker installation
   block:
-  - name: Enable ha repository on CentOS8
+  - name: Enable ha repository on CentOS8 and Rocky
     lineinfile:
       path: /etc/yum.repos.d/CentOS-Linux-HighAvailability.repo
       regex: "^enabled="
       line: enabled=1
-    when: "ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'"
+    when: "(ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8') or (ansible_distribution == 'Rocky')"
 
   - name: Install pacemaker packages
     package:
